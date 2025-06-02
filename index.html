@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cyberpunk Smart Calculator</title>
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- MathJS for advanced math calculations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.js"></script>
+
+  <!-- MathSteps for step-by-step solving -->
+  <script src="https://cdn.jsdelivr.net/npm/mathsteps@0.4.0/dist/mathsteps.min.js"></script>
+</head>
+
+<body>
+  <div class="calculator-container">
+    <h1>Cyberpunk Smart Calculator</h1>
+
+    <!-- Mode Switch Buttons -->
+    <div class="mode-switcher">
+      <button onclick="switchMode('mini')">Mini</button>
+      <button onclick="switchMode('scientific')">Scientific</button>
+      <button onclick="switchMode('equation')">Equation</button>
+      <button onclick="switchMode('physics')">Physics</button>
+      <button onclick="switchMode('finance')">Finance</button>
+    </div>
+
+    <!-- Dynamic Calculator Area -->
+    <div id="calculator"></div>
+
+    <!-- Equation Solver (Equation Mode Only) -->
+    <div id="equation-section" style="display: none;">
+      <input id="equation" placeholder="Enter equation like 2x + 3 = 7" />
+      <button onclick="solveEquationSteps()">Solve Step-by-Step</button>
+      <div id="result"></div>
+    </div>
+  </div>
+
+  <!-- App Logic -->
+  <script src="java.js"></script>
+</body>
+</html>
+
