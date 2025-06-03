@@ -1,89 +1,116 @@
 
 function switchMode(mode) {
-    const calc = document.getElementById("calculator");
-    if (mode === "mini") {
-        calc.innerHTML = "<input id=\"display\" readonly><br><button onclick=\"append('1')\">1</button><button onclick=\"append('2')\">2</button><button onclick=\"append('+')\">+</button><button onclick=\"calculate()\">=</button>";
-    } else if (mode === "scientific") {
-        calc.innerHTML = "<input id=\"display\" readonly><br><button onclick=\"append('sin(')\">sin</button><button onclick=\"append('cos(')\">cos</button><button onclick=\"append('tan(')\">tan</button><button onclick=\"calculate()\">=</button>";
-    } else if (mode === "equation") {
-        calc.innerHTML = '<input id="equation" placeholder="Enter equation like x+2=5"><button onclick="solveEquation()">Solve</button><div id="result"></div>';
-    } else if (mode === "physics") {
-        calc.innerHTML = '<input id="equation" placeholder="Enter physics formula e.g. F=m*a"><br><input id="vars" placeholder="Enter variables e.g. m=2,a=3"><button onclick="solvePhysics()">Solve</button><div id="result"></div>';
-    } else if (mode === "finance") {
-        calc.innerHTML = '<select id="financeType"><option value="simple">Simple Interest</option><option value="compound">Compound Interest</option></select><br><input id="P" placeholder="Principal"><input id="r" placeholder="Rate"><input id="t" placeholder="Time"><button onclick="solveFinance()">Solve</button><div id="result"></div>';
+    const calcDiv = document.getElementById("calculator");
+    const eqSection = document.getElementById("equation-section");
+    eqSection.style.display = mode === "equation" ? "block" : "none";
+    calcDiv.innerHTML = "";
+
+    if (mode === "games") {
+        let score = 0;
+        let question = {};
+
+        function generateQuestion() {
+            const a = Math.floor(Math.random() * 10);
+            const b = Math.floor(Math.random() * 10);
+            question = { a, b, answer: a + b };
+            calcDiv.innerHTML = `
+                <h2>What is ${a} + ${b}?</h2>
+                <input type="number" id="game-answer" />
+                <button onclick="checkAnswer()">Submit</button>
+                <p id="game-result"></p>
+                <p>Score: <span id="score">${score}</span></p>
+            `;
+        }
+
+        window.checkAnswer = () => {
+            const userAnswer = parseInt(document.getElementById("game-answer").value);
+            const result = document.getElementById("game-result");
+            if (userAnswer === question.answer) {
+                score++;
+                result.textContent = "Correct!";
+            } else {
+                result.textContent = `Wrong. The answer was ${question.answer}`;
+            }
+            document.getElementById("score").textContent = score;
+            setTimeout(generateQuestion, 1500);
+        };
+
+        generateQuestion();
     }
 }
 
-function append(val) {
-    const display = document.getElementById("display");
-    display.value += val;
-}
-
-function calculate() {
-    const display = document.getElementById("display");
-    try {
-        display.value = math.evaluate(display.value);
-    } catch {
-        display.value = "Error";
-    }
-}
-
-function solveEquation() {
-    const eq = document.getElementById("equation").value;
-    try {
-        const result = math.solve(eq, 'x');
-        document.getElementById("result").innerText = result.toString();
-    } catch (err) {
-        document.getElementById("result").innerText = "Error: " + err.message;
-    }
-}
-
-function solvePhysics() {
-    const equation = document.getElementById("equation").value;
-    const vars = document.getElementById("vars").value;
-    let scope = {};
-    vars.split(',').forEach(kv => {
-        const [key, val] = kv.split('=');
-        scope[key.trim()] = parseFloat(val);
-    });
-    try {
-        const [lhs, rhs] = equation.split('=');
-        const unknown = lhs.trim();
-        scope[unknown] = math.evaluate(rhs, scope);
-        document.getElementById("result").innerText = `${unknown} = ${scope[unknown]}`;
-    } catch (err) {
-        document.getElementById("result").innerText = "Error: " + err.message;
-    }
-}
-
-function solveFinance() {
-    const type = document.getElementById("financeType").value;
-    const P = parseFloat(document.getElementById("P").value);
-    const r = parseFloat(document.getElementById("r").value) / 100;
-    const t = parseFloat(document.getElementById("t").value);
-    let result = 0;
-    if (type === "simple") {
-        result = (P * r * t);
-    } else if (type === "compound") {
-        result = P * Math.pow(1 + r, t);
-    }
-    document.getElementById("result").innerText = "Result: " + result.toFixed(2);
-}
 function solveEquationSteps() {
-    const equationInput = document.getElementById("equation").value;
-    const steps = mathsteps.solveEquation(equationInput);
-
+    const input = document.getElementById("equation").value;
     const resultDiv = document.getElementById("result");
-    resultDiv.innerHTML = "";
 
-    if (!steps || steps.length === 0) {
-        resultDiv.innerHTML = "No steps found or unable to solve the equation.";
-        return;
+    try {
+        const steps = Algebrite.run(`solve(${input})`);
+        resultDiv.innerHTML = `<h3>Solution:</h3><p>${steps}</p>`;
+    } catch (err) {
+        resultDiv.innerHTML = "Unable to solve. Please enter a valid equation.";
     }
-
-    steps.forEach((step, index) => {
-        const stepDiv = document.createElement("div");
-        stepDiv.textContent = `Step ${index + 1}: ${step.newEquation.ascii()}`;
-        resultDiv.appendChild(stepDiv);
-    });
 }
+
+function explainMath() {
+    const expr = document.getElementById("explain-input").value.trim();
+    const explanation = document.getElementById("explanation");
+
+    try {
+        const node = math.parse(expr);
+        const simplified = math.simplify(expr).toString();
+        explanation.innerHTML = `
+            <p><strong>Original:</strong> ${expr}</p>
+            <p><strong>Parsed Tree:</strong> ${node.toString()}</p>
+            <p><strong>Simplified:</strong> ${simplified}</p>
+        `;
+    } catch (e) {
+        explanation.textContent = "Sorry, couldn't explain that.";
+    }
+}
+
+function startVoiceRecognition() {
+    const display = document.getElementById("voice-input-display");
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'en-US';
+
+    recognition.onstart = () => {
+        display.textContent = "Listening...";
+    };
+
+    recognition.onerror = (event) => {
+        display.textContent = "Error: " + event.error;
+    };
+
+    recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        display.textContent = "You said: " + transcript;
+        try {
+            const result = math.evaluate(transcript);
+            alert("Result: " + result);
+        } catch (e) {
+            alert("Sorry, couldn't evaluate that.");
+        }
+    };
+
+    recognition.start();
+}
+
+function login() {
+    const username = document.getElementById("username").value;
+    if (username.trim()) {
+        localStorage.setItem("calculatorUser", username);
+        document.getElementById("login-container").style.display = "none";
+        document.querySelector(".calculator-container").style.display = "block";
+        alert(`Welcome, ${username}!`);
+    } else {
+        alert("Please enter a name.");
+    }
+}
+
+window.onload = () => {
+    if (localStorage.getItem("calculatorUser")) {
+        document.getElementById("login-container").style.display = "none";
+    } else {
+        document.querySelector(".calculator-container").style.display = "none";
+    }
+};
