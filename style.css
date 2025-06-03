@@ -21,44 +21,71 @@ body {
 }
 
 button {
-    background-color: #0ff;
-    color: #000;
-    padding: 10px 20px;
+    background-color: #2a2a4a;
+    color: #0ff;
+    padding: 12px 20px;
     margin: 5px;
-    border: none;
-    border-radius: 5px;
+    border: 1px solid #0ff;
+    border-radius: 8px;
     cursor: pointer;
     font-weight: bold;
     transition: all 0.3s ease;
+    font-size: 1.1em;
 }
 
 button:hover {
-    background-color: #00cccc;
+    background-color: #3a3a6a;
     transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
 }
 
 button:active {
     transform: scale(0.95);
+    background-color: #0ff;
+    color: #1a1a2e;
 }
+
+.number-key { background-color: #2a2a4a; }
+.operator-key { background-color: #1a1a3a; }
+.function-key { background-color: #2a1a4a; }
+.equals-key { 
+    background-color: #0ff;
+    color: #1a1a2e;
+}
+.clear-key { background-color: #4a1a2a; }
 
 input {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     margin-top: 10px;
     background: #0f0f1a;
     border: 1px solid #0ff;
     color: #0ff;
-    border-radius: 5px;
+    border-radius: 8px;
     font-size: 1.2em;
+    transition: all 0.3s ease;
+}
+
+input:focus {
+    outline: none;
+    box-shadow: 0 0 10px #0ff;
+    border-color: #00ffff;
 }
 
 .voice-section,
 .explain-section {
     margin-top: 20px;
     background: rgba(0, 255, 255, 0.05);
-    padding: 10px;
+    padding: 15px;
     border: 1px solid #0ff;
     border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.voice-section:hover,
+.explain-section:hover {
+    background: rgba(0, 255, 255, 0.1);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
 }
 
 .scientific-keypad {
@@ -74,32 +101,48 @@ input {
 
 .display input {
     text-align: right;
-    font-size: 1.5em;
+    font-size: 1.8em;
     padding: 15px;
     margin: 0;
+    font-family: 'Courier New', monospace;
+}
+
+#history {
+    margin-top: 10px;
+    padding: 5px;
+    font-size: 0.9em;
+    color: rgba(0, 255, 255, 0.7);
+}
+
+.history-item {
+    padding: 3px;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.2);
 }
 
 h1, h2 {
     text-align: center;
     text-shadow: 0 0 10px #0ff;
+    margin-bottom: 20px;
 }
 
 #login-container {
     background: #1a1a2e;
     border: 2px solid #0ff;
     border-radius: 12px;
-    padding: 20px;
+    padding: 30px;
     width: 90%;
     max-width: 400px;
     box-shadow: 0 0 20px #0ff;
     margin-top: 50px;
+    text-align: center;
 }
 
 #result, #explanation {
     margin-top: 15px;
-    padding: 10px;
+    padding: 15px;
     background: rgba(0, 255, 255, 0.05);
-    border-radius: 5px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 255, 255, 0.2);
 }
 
 .mode-switcher {
@@ -107,12 +150,120 @@ h1, h2 {
     flex-wrap: wrap;
     justify-content: center;
     margin-bottom: 20px;
+    gap: 10px;
 }
 
 pre {
     background: #0f0f1a;
-    padding: 10px;
-    border-radius: 5px;
+    padding: 15px;
+    border-radius: 8px;
     overflow-x: auto;
     color: #0ff;
+    border: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.game-container {
+    text-align: center;
+    padding: 20px;
+}
+
+.game-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+    font-size: 1.2em;
+}
+
+.game-button {
+    background-color: #0ff;
+    color: #1a1a2e;
+    font-size: 1.2em;
+    padding: 15px 30px;
+    margin-top: 15px;
+}
+
+.game-result {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.game-result.correct {
+    background-color: rgba(0, 255, 0, 0.2);
+    color: #0f0;
+}
+
+.game-result.incorrect {
+    background-color: rgba(255, 0, 0, 0.2);
+    color: #f00;
+}
+
+.welcome-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 255, 255, 0.1);
+    padding: 15px 30px;
+    border-radius: 8px;
+    border: 1px solid #0ff;
+    animation: slideIn 0.5s ease-out;
+}
+
+.error-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 0, 0, 0.2);
+    color: #ff0;
+    padding: 15px 30px;
+    border-radius: 8px;
+    border: 1px solid #ff0;
+    animation: slideIn 0.5s ease-out;
+}
+
+.listening {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pulse {
+    width: 10px;
+    height: 10px;
+    background-color: #0ff;
+    border-radius: 50%;
+    animation: pulse 1s infinite;
+}
+
+.explanation-box {
+    background: rgba(0, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.error-box {
+    background: rgba(255, 0, 0, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 0, 0, 0.2);
+    color: #ff0;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.5); opacity: 0.5; }
+    100% { transform: scale(1); opacity: 1; }
 }
